@@ -2,4 +2,6 @@
     <string name="app_name">scouter</string>
     <string name="title_scan">Scan</string>
     <string name="title_settings">Settings</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
