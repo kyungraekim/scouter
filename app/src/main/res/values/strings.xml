@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">scouter</string>
+    <string name="title_scan">Scan</string>
+    <string name="title_settings">Settings</string>
+</resources>
