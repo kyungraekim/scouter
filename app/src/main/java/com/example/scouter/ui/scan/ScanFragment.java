@@ -7,6 +7,8 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.scouter.databinding.FragmentScanBinding;
 
@@ -15,6 +17,7 @@ import com.example.scouter.databinding.FragmentScanBinding;
  */
 public class ScanFragment extends Fragment {
     private FragmentScanBinding binding;
+    private ScanListAdapter scanListAdapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -25,6 +28,11 @@ public class ScanFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = FragmentScanBinding.inflate(inflater, container, false);
+        RecyclerView recyclerView = binding.listDeviceScan;
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        scanListAdapter = new ScanListAdapter();
+        recyclerView.setAdapter(scanListAdapter);
         return binding.getRoot();
     }
 
