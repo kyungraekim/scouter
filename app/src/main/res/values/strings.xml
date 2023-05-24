@@ -4,4 +4,7 @@
     <string name="title_settings">Settings</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="item_device_name_default">Unknown</string>
+    <string name="item_address_sample">sample:address</string>
+    <string name="item_value_sample">255</string>
 </resources>
