@@ -39,6 +39,12 @@ public class ScanListAdapter extends RecyclerView.Adapter<ScanListAdapter.ViewHo
         return scanItemList.size();
     }
 
+    public void updateList(List<DeviceScanItem> deviceScanItems) {
+        scanItemList.clear();
+        scanItemList.addAll(deviceScanItems);
+        notifyDataSetChanged();
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder {
         private final TextView deviceName;
         private final TextView measuredValue;

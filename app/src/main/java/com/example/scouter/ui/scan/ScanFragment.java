@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -33,6 +34,13 @@ public class ScanFragment extends Fragment {
 
         scanListAdapter = new ScanListAdapter();
         recyclerView.setAdapter(scanListAdapter);
+
+        ScanViewModel viewModel = new ViewModelProvider(this).get(ScanViewModel.class);
+        viewModel.getScanList().observe(getViewLifecycleOwner(), deviceScanItems -> {
+            binding.listDeviceScan.setVisibility(View.VISIBLE);
+            scanListAdapter.updateList(deviceScanItems);
+        });
+        viewModel.startScan();
         return binding.getRoot();
     }
 
