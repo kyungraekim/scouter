@@ -18,8 +18,6 @@ public class ScanListAdapter extends RecyclerView.Adapter<ScanListAdapter.ViewHo
 
     public ScanListAdapter() {
         scanItemList = new ArrayList<>();
-        scanItemList.add(new DeviceScanItem("Sample Device", 123));
-        scanItemList.add(new DeviceScanItem("Sample Device2", 2345));
     }
 
     @NonNull
@@ -48,16 +46,22 @@ public class ScanListAdapter extends RecyclerView.Adapter<ScanListAdapter.ViewHo
     public class ViewHolder extends RecyclerView.ViewHolder {
         private final TextView deviceName;
         private final TextView measuredValue;
+        private final TextView address;
+        private final TextView interval;
 
         public ViewHolder(FragmentDeviceScanBinding binding) {
             super(binding.getRoot());
             deviceName = binding.itemDevice;
             measuredValue = binding.itemValue;
+            address = binding.itemAddress;
+            interval = binding.itemInterval;
         }
 
         public void setScanItem(DeviceScanItem scanItem) {
             deviceName.setText(scanItem.getDeviceName());
             measuredValue.setText(String.valueOf(scanItem.getValue()));
+            address.setText(scanItem.getAddress());
+            interval.setText(String.valueOf(scanItem.getInterval()));
         }
     }
 }
