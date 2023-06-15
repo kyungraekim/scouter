@@ -7,6 +7,7 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.scouter.scan.BleScanner;
+import com.example.scouter.scan.ScanResult;
 import com.example.scouter.ui.scan.placeholder.DeviceScanItem;
 
 import java.util.ArrayList;
@@ -36,22 +37,26 @@ public class ScanViewModel extends AndroidViewModel {
     public void startScan() {
         disposable.add(
                 scanner.scan()
-                        .subscribeOn(Schedulers.newThread())
+                        .subscribeOn(Schedulers.io())
+                        .map(this::updateScanResult)
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(scanResult -> {
-                            if (!scanIndexed.containsKey(scanResult.getAddress())) {
-                                scanIndexed.put(scanResult.getAddress(), scanIndexed.size());
-                                DeviceScanItem item = new DeviceScanItem(scanResult);
-                                scanned.add(item);
-                            } else {
-                                Integer index = scanIndexed.get(scanResult.getAddress());
-                                assert index != null;
-                                DeviceScanItem item = scanned.get(index);
-                                item.update(scanResult);
-                            }
-
-                            scanList.setValue(scanned);
-                        })
+                        .subscribe(ignoredItem -> scanList.setValue(scanned))
         );
+    }
+
+    private DeviceScanItem updateScanResult(ScanResult scanResult) {
+        DeviceScanItem item;
+        if (!scanIndexed.containsKey(scanResult.getAddress())) {
+            scanIndexed.put(scanResult.getAddress(), scanIndexed.size());
+            item = new DeviceScanItem(scanResult);
+            scanned.add(item);
+        } else {
+            Integer index = scanIndexed.get(scanResult.getAddress());
+            assert index != null;
+            item = scanned.get(index);
+            item.update(scanResult);
+        }
+
+        return item;
     }
 }
