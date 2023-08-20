@@ -16,13 +16,15 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         setPreferencesFromResource(R.xml.root_preferences, rootKey);
 
+        DirectoryPreference logPreference = findPreference(getString(R.string.setting_log_path));
         bleSwitch = findPreference(getString(R.string.setting_scan_ble));
         bluetoothSwitch = findPreference(getString(R.string.setting_scan_bl));
-        if (bleSwitch == null || bluetoothSwitch == null) {
+        if (logPreference == null || bleSwitch == null || bluetoothSwitch == null) {
             Toast.makeText(getContext(), "Failed to create preference page", Toast.LENGTH_SHORT)
                     .show();
             return;
         }
+        logPreference.registerActivity(this);
         bleSwitch.setOnPreferenceChangeListener((preference, newValue) -> {
             boolean isChecked = (boolean) newValue;
             bluetoothSwitch.setChecked(!isChecked);
