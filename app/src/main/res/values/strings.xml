@@ -9,4 +9,5 @@
     <string name="item_value_sample">255</string>
     <string name="item_interval_sample">0</string>
     <string name="text_interval_unit">ms</string>
+    <string name="scan_permission_error">Bluetooth scanning is not permitted</string>
 </resources>
