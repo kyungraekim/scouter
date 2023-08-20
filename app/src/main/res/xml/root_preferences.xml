@@ -1,0 +1,25 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory app:title="@string/header_scan">
+        <SwitchPreferenceCompat
+            app:defaultValue="true"
+            app:key="save_log"
+            app:title="@string/switch_save_log" />
+        <com.example.scouter.ui.settings.DirectoryPreference
+            app:dependency="save_log"
+            app:key="@string/setting_log_path"
+            app:title="Log file location" />
+        <SwitchPreferenceCompat
+            android:defaultValue="true"
+            app:key="@string/setting_scan_ble"
+            app:title="@string/switch_scan_ble" />
+        <SwitchPreferenceCompat
+            app:key="@string/setting_scan_bl"
+            app:title="@string/switch_scan_bl" />
+        <SwitchPreferenceCompat
+            app:key="scan_wifi"
+            app:title="@string/switch_scan_wifi" />
+    </PreferenceCategory>
+
+</PreferenceScreen>

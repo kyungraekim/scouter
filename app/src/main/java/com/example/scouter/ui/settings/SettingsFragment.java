@@ -1,36 +1,37 @@
 package com.example.scouter.ui.settings;
 
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
+import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.SwitchPreferenceCompat;
 
-import com.example.scouter.databinding.FragmentSettingsBinding;
+import com.example.scouter.R;
 
-/**
- * A simple {@link Fragment} subclass.
- */
-public class SettingsFragment extends Fragment {
-    private FragmentSettingsBinding binding;
+public class SettingsFragment extends PreferenceFragmentCompat {
+    private SwitchPreferenceCompat bleSwitch;
+    private SwitchPreferenceCompat bluetoothSwitch;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
+    public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+        setPreferencesFromResource(R.xml.root_preferences, rootKey);
 
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        binding = FragmentSettingsBinding.inflate(inflater, container, false);
-        return binding.getRoot();
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        binding = null;
+        bleSwitch = findPreference(getString(R.string.setting_scan_ble));
+        bluetoothSwitch = findPreference(getString(R.string.setting_scan_bl));
+        if (bleSwitch == null || bluetoothSwitch == null) {
+            Toast.makeText(getContext(), "Failed to create preference page", Toast.LENGTH_SHORT)
+                    .show();
+            return;
+        }
+        bleSwitch.setOnPreferenceChangeListener((preference, newValue) -> {
+            boolean isChecked = (boolean) newValue;
+            bluetoothSwitch.setChecked(!isChecked);
+            return true;
+        });
+        bluetoothSwitch.setOnPreferenceChangeListener(((preference, newValue) -> {
+            boolean isChecked = (boolean) newValue;
+            bleSwitch.setChecked(!isChecked);
+            return true;
+        }));
     }
 }

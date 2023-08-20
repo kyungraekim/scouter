@@ -10,4 +10,17 @@
     <string name="item_interval_sample">0</string>
     <string name="text_interval_unit">ms</string>
     <string name="scan_permission_error">Bluetooth scanning is not permitted</string>
+    <!-- Preference Titles -->
+    <string name="header_scan">Scan</string>
+    <string name="header_test">Test</string>
+
+    <!-- Scan Preference -->
+    <string name="setting_log_path">log_path</string>
+    <string name="setting_scan_ble">scan_ble</string>
+    <string name="setting_scan_bl">scan_bl</string>
+    <string name="switch_save_log">Save log file</string>
+    <string name="switch_scan_ble">Scan Bluetooth Low Energy</string>
+    <string name="switch_scan_bl">Scan Bluetooth</string>
+    <string name="switch_scan_wifi">Scan WiFi</string>
+
 </resources>
