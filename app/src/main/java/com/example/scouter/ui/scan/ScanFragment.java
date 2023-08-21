@@ -51,7 +51,14 @@ public class ScanFragment extends Fragment {
             binding.textErrorScanPermission.setVisibility(View.GONE);
             scanListAdapter.updateList(deviceScanItems);
         });
-        viewModel.startScan();
+        binding.buttonPlay.setOnClickListener(view -> {
+            if (!view.isActivated()) {
+                viewModel.startScan();
+            } else {
+                viewModel.stopScan();
+            }
+            view.setActivated(!view.isActivated());
+        });
         return binding.getRoot();
     }
 

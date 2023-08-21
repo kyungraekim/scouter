@@ -23,4 +23,7 @@
     <string name="switch_scan_bl">Scan Bluetooth</string>
     <string name="switch_scan_wifi">Scan WiFi</string>
 
+    <!-- Scan Fragment -->
+    <string name="desc_button_scan">Play and Stop</string>
+
 </resources>

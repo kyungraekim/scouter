@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
-import io.reactivex.rxjava3.disposables.CompositeDisposable;
+import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class ScanViewModel extends AndroidViewModel {
@@ -27,7 +27,7 @@ public class ScanViewModel extends AndroidViewModel {
     private final MutableLiveData<List<DeviceScanItem>> scanList = new MutableLiveData<>();
     private final Map<String, Integer> scanIndexed = new HashMap<>();
     private final BleScanner scanner = new BleScanner();
-    private final CompositeDisposable disposable = new CompositeDisposable();
+    private Disposable disposable;
 
     private final MutableLiveData<String[]> permissions = new MutableLiveData<>();
 
@@ -48,13 +48,11 @@ public class ScanViewModel extends AndroidViewModel {
             permissions.setValue(Permission.BLUETOOTH_LOW_ENERGY);
             return;
         }
-        disposable.add(
-                scanner.scan()
-                        .subscribeOn(Schedulers.io())
-                        .map(this::updateScanResult)
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(ignoredItem -> scanList.setValue(scanned))
-        );
+        disposable = scanner.scan()
+                .subscribeOn(Schedulers.io())
+                .map(this::updateScanResult)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(ignoredItem -> scanList.setValue(scanned));
     }
 
     private DeviceScanItem updateScanResult(ScanResult scanResult) {
@@ -85,5 +83,11 @@ public class ScanViewModel extends AndroidViewModel {
             ) == PackageManager.PERMISSION_GRANTED;
         }
         return isGranted;
+    }
+
+    public void stopScan() {
+        if (disposable != null) {
+            disposable.dispose();
+        }
     }
 }
