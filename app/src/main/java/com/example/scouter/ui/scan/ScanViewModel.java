@@ -1,12 +1,15 @@
 package com.example.scouter.ui.scan;
 
 import android.app.Application;
+import android.content.pm.PackageManager;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.scouter.scan.BleScanner;
+import com.example.scouter.scan.Permission;
 import com.example.scouter.scan.ScanResult;
 import com.example.scouter.ui.scan.placeholder.DeviceScanItem;
 
@@ -26,6 +29,8 @@ public class ScanViewModel extends AndroidViewModel {
     private final BleScanner scanner = new BleScanner();
     private final CompositeDisposable disposable = new CompositeDisposable();
 
+    private final MutableLiveData<String[]> permissions = new MutableLiveData<>();
+
     public ScanViewModel(@NonNull Application application) {
         super(application);
     }
@@ -34,7 +39,15 @@ public class ScanViewModel extends AndroidViewModel {
         return scanList;
     }
 
+    public MutableLiveData<String[]> getPermissions() {
+        return permissions;
+    }
+
     public void startScan() {
+        if (!isBlePermitted()) {
+            permissions.setValue(Permission.BLUETOOTH_LOW_ENERGY);
+            return;
+        }
         disposable.add(
                 scanner.scan()
                         .subscribeOn(Schedulers.io())
@@ -58,5 +71,19 @@ public class ScanViewModel extends AndroidViewModel {
         }
 
         return item;
+    }
+
+    public String[] getRequiredPermissions() {
+        return Permission.BLUETOOTH_LOW_ENERGY;
+    }
+
+    public boolean isBlePermitted() {
+        boolean isGranted = true;
+        for (String permission : getRequiredPermissions()) {
+            isGranted &= ContextCompat.checkSelfPermission(
+                    getApplication().getApplicationContext(), permission
+            ) == PackageManager.PERMISSION_GRANTED;
+        }
+        return isGranted;
     }
 }

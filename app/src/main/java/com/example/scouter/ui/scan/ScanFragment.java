@@ -1,8 +1,8 @@
 package com.example.scouter.ui.scan;
 
 import android.app.AlertDialog;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,14 +11,12 @@ import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.scouter.databinding.FragmentScanBinding;
-import com.example.scouter.scan.Permission;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -27,10 +25,12 @@ public class ScanFragment extends Fragment {
     private FragmentScanBinding binding;
     private ScanViewModel viewModel;
     private ScanListAdapter scanListAdapter;
+    private ActivityResultLauncher<String[]> requestLauncher;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestLauncher = getRequestLauncher();
     }
 
     @Override
@@ -44,50 +44,49 @@ public class ScanFragment extends Fragment {
         recyclerView.setAdapter(scanListAdapter);
 
         viewModel = new ViewModelProvider(this).get(ScanViewModel.class);
-        checkBluetoothPermission();
+        viewModel.getPermissions().observe(getViewLifecycleOwner(), permissions ->
+                requestPermissions(requestLauncher, permissions));
         viewModel.getScanList().observe(getViewLifecycleOwner(), deviceScanItems -> {
             binding.listDeviceScan.setVisibility(View.VISIBLE);
             binding.textErrorScanPermission.setVisibility(View.GONE);
             scanListAdapter.updateList(deviceScanItems);
         });
+        viewModel.startScan();
         return binding.getRoot();
     }
 
-    private void checkBluetoothPermission() {
-        ActivityResultLauncher<String[]> requestPermissionLauncher =
-                registerForActivityResult(
-                        new ActivityResultContracts.RequestMultiplePermissions(),
-                        booleanMap -> {
-                            boolean isGranted = isBlePermitted();
-                            if (isGranted) {
-                                Toast.makeText(getContext(), "Granted", Toast.LENGTH_SHORT).show();
-                                enableScan();
-                            } else {
-                                Toast.makeText(getContext(), "Not granted", Toast.LENGTH_SHORT).show();
-                                disableScan();
-                            }
-                        });
-
-        if (!isBlePermitted()) {
-            new AlertDialog.Builder(getContext())
-                    .setTitle("Bluetooth Scan Permission")
-                    .setMessage("Requires access to scan BLE devices")
-                    .setPositiveButton("Allow", ((dialogInterface, i) ->
-                            requestPermissionLauncher.launch(Permission.BLUETOOTH_LOW_ENERGY)))
-                    .setNegativeButton("No", ((dialogInterface, i) -> disableScan()))
-                    .show();
-        } else {
-            enableScan();
-        }
+    private ActivityResultLauncher<String[]> getRequestLauncher() {
+        return registerForActivityResult(
+                new ActivityResultContracts.RequestMultiplePermissions(),
+                booleanMap -> {
+                    boolean isGranted = true;
+                    for (boolean eachGranted : booleanMap.values()) {
+                        isGranted &= eachGranted;
+                    }
+                    if (isGranted) {
+                        Toast.makeText(getContext(),
+                                "Granted", Toast.LENGTH_SHORT).show();
+                        enableScan();
+                        viewModel.startScan();
+                    } else {
+                        Toast.makeText(getContext(),
+                                "Not granted", Toast.LENGTH_SHORT).show();
+                        disableScan();
+                    }
+                }
+        );
     }
 
-    private boolean isBlePermitted() {
-        boolean isGranted = true;
-        for (String permission : Permission.BLUETOOTH_LOW_ENERGY) {
-            isGranted &= ContextCompat.checkSelfPermission(requireContext(), permission) ==
-                    PackageManager.PERMISSION_GRANTED;
-        }
-        return isGranted;
+    private <T> void requestPermissions(ActivityResultLauncher<T> requestLauncher,
+                                        T permissions) {
+        Log.i("permission", "request permissions");
+        new AlertDialog.Builder(getContext())
+                .setTitle("Permission requests for scanning")
+                .setMessage("Requires permissions to scan devices")
+                .setPositiveButton("Allow", (dialogInterface, i) ->
+                        requestLauncher.launch(permissions))
+                .setNegativeButton("No", ((dialogInterface, i) -> disableScan()))
+                .show();
     }
 
     private void disableScan() {
@@ -97,7 +96,6 @@ public class ScanFragment extends Fragment {
 
     private void enableScan() {
         binding.textErrorScanPermission.setVisibility(View.GONE);
-        viewModel.startScan();
     }
 
     @Override
